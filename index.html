@@ -522,22 +522,30 @@ function getMonthKey(row){
   let d;
   const num = parseFloat(String(ts).trim());
   
-  // 情況 A：如果是 Excel 數字序號型態
+  // A. 如果是 Excel 數字序號型態
   if (!isNaN(num) && num > 40000) {
     d = new Date(Math.round((num - 25569) * 86400 * 1000));
   } else {
-    // 情況 B：如果是標準文字日期（例如 "2026/5/20" 或 "2026-05-20"）
-    // 考慮到民國減 1911 的習慣，這裡先抓西元年
-    d = new Date(String(ts).replace(/-/g, '/')); 
+    // B. 如果是 Google 表單文字（例如 "2026/5/20 下午 12:53:40"）
+    // 先移除「上午/下午」中文字，並將 "-" 換成 "/" 確保所有瀏覽器都能正確解析成日期
+    let cleanTs = String(ts).replace(/[\u4e00-\u9fa5]/g, '').replace(/-/g, '/').trim();
+    d = new Date(cleanTs);
+    
+    // 如果因為時間格式導致解析失敗，嘗試只切出前面的「年月日」部分（如 2026/5/20）
+    if (isNaN(d.getTime())) {
+      const parts = cleanTs.split(' ');
+      if (parts[0]) d = new Date(parts[0]);
+    }
   }
   
-  // 檢查 Date 物件是否有效
-  if (isNaN(d.getTime())) return '—';
+  // 檢查 Date 物件是否有效，無效則回傳 "—"
+  if (!d || isNaN(d.getTime())) return '—';
   
   // 轉換成與選單對應的格式（例如 "115年05月"）
   const rocYear = d.getFullYear() - 1911;
   const m = String(d.getMonth() + 1).padStart(2, '0');
   return rocYear + '年' + m + '月';
+}
 }
 function fmtMoney(n){ return "NT$ "+Math.round(n).toLocaleString(); }
 function pct(a,b){ return b===0?0:Math.round(a/b*100); }
