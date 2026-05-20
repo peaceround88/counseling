@@ -1,457 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>高雄市教育局｜心理諮商經費控管系統</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --navy:#0d3b6e; --navy-mid:#1a5c96; --navy-light:#2e7fc1;
-  --gold:#c8a84b; --gold-light:#f0d98a; --gold-pale:#fdf8ec;
-  --white:#fff; --cream:#f8f7f4;
-  --g100:#f4f5f7; --g200:#e8eaed; --g300:#d1d5db;
-  --g400:#9aa1ad; --g600:#555d6b; --g800:#2c3340;
-  --green:#2e7d32; --green-bg:#e8f5e9; --green-light:#c8e6c9;
-  --red:#c62828; --red-bg:#ffebee;
-  --orange:#bf6000; --orange-bg:#fff8e1;
-  --blue:#1565c0; --blue-bg:#e3f2fd;
-  --purple:#5e35b1; --purple-bg:#ede7f6;
-  --teal:#00695c; --teal-bg:#e0f2f1;
-  --r:10px; --r-sm:6px; --r-lg:16px;
-  --sh:0 2px 12px rgba(13,59,110,.08);
-  --sh2:0 8px 32px rgba(13,59,110,.14);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--g800);min-height:100vh}
-
-/* ── LOGIN SCREEN ── */
-#login-screen{
-  position:fixed;inset:0;z-index:999;
-  background:var(--navy);
-  display:flex;align-items:center;justify-content:center;
-}
-#login-screen::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 70% 30%, rgba(200,168,75,.12) 0%, transparent 60%),
-             radial-gradient(ellipse at 20% 80%, rgba(46,127,193,.1) 0%, transparent 50%);
-}
-.login-card{
-  position:relative;z-index:1;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(200,168,75,.25);
-  border-radius:var(--r-lg);
-  padding:2.5rem 2.25rem;
-  width:min(380px,90vw);
-  backdrop-filter:blur(8px);
-  box-shadow:0 24px 64px rgba(0,0,0,.4);
-}
-.login-logo{text-align:center;margin-bottom:1.75rem}
-.login-badge{
-  display:inline-block;font-size:10px;letter-spacing:3px;
-  color:var(--gold-light);border:1px solid rgba(200,168,75,.4);
-  padding:3px 14px;border-radius:99px;margin-bottom:.75rem;
-  font-family:'Noto Serif TC',serif;
-}
-.login-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:600;color:#fff;line-height:1.6;text-align:center}
-.login-gold{width:36px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));margin:.8rem auto 0;border-radius:2px}
-.login-label{display:block;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:5px;letter-spacing:.5px}
-.login-input{
-  width:100%;padding:11px 14px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:var(--r-sm);color:#fff;
-  font-size:15px;font-family:inherit;
-  transition:border-color .15s,background .15s;
-  letter-spacing:2px;
-}
-.login-input:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.1)}
-.login-input::placeholder{color:rgba(255,255,255,.25);letter-spacing:0}
-.login-btn{
-  width:100%;margin-top:1.25rem;
-  padding:12px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--gold),#e8b84b);
-  color:#fff;font-size:14px;font-weight:500;
-  font-family:'Noto Serif TC',serif;letter-spacing:1px;
-  border-radius:var(--r-sm);
-  box-shadow:0 4px 16px rgba(200,168,75,.35);
-  transition:opacity .15s,transform .1s;
-}
-.login-btn:hover{opacity:.9;transform:translateY(-1px)}
-.login-btn:active{transform:translateY(0)}
-.login-err{
-  margin-top:.75rem;font-size:12px;color:#ef9a9a;
-  text-align:center;min-height:18px;
-}
-
-/* ── MAIN APP ── */
-#app{display:none}
-
-/* TOPBAR */
-.topbar{
-  background:var(--navy);padding:.85rem 1.5rem;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 2px 8px rgba(0,0,0,.2);
-  position:sticky;top:0;z-index:100;
-}
-.topbar-title{
-  font-family:'Noto Serif TC',serif;
-  font-size:15px;font-weight:600;color:#fff;
-  display:flex;align-items:center;gap:10px;
-}
-.topbar-badge{
-  font-size:10px;color:var(--gold-light);
-  border:1px solid rgba(200,168,75,.35);
-  padding:2px 10px;border-radius:99px;letter-spacing:2px;
-  font-family:'Noto Sans TC',sans-serif;font-weight:400;
-}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.refresh-btn{
-  font-size:12px;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);padding:5px 12px;border-radius:99px;
-  cursor:pointer;font-family:inherit;transition:all .15s;
-}
-.refresh-btn:hover{background:rgba(255,255,255,.14);color:#fff}
-.logout-btn{
-  font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;
-  background:none;border:none;font-family:inherit;
-}
-.logout-btn:hover{color:rgba(255,255,255,.85)}
-
-/* TABS */
-.tabs{background:var(--navy-mid);padding:0 1.5rem;display:flex;gap:2px}
-.tab{
-  font-size:13px;padding:.7rem 1.25rem;color:rgba(255,255,255,.55);
-  cursor:pointer;border-bottom:2px solid transparent;
-  transition:all .15s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none;
-  white-space:nowrap;
-}
-.tab:hover{color:rgba(255,255,255,.85)}
-.tab.active{color:#fff;border-bottom-color:var(--gold-light)}
-
-/* MAIN CONTENT */
-.main-content{max-width:1280px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
-.tab-pane{display:none}
-.tab-pane.active{display:block}
-
-/* SECTION TITLE */
-.sec-title{
-  font-family:'Noto Serif TC',serif;
-  font-size:16px;font-weight:600;color:var(--navy);
-  margin-bottom:1.1rem;display:flex;align-items:center;gap:8px;
-}
-.sec-title::before{content:'';width:3px;height:18px;background:var(--gold);border-radius:2px;flex-shrink:0}
-
-/* STAT CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:1.75rem}
-.scard{
-  background:var(--white);border-radius:var(--r);
-  border:1px solid var(--g200);padding:1.1rem 1.25rem;
-  box-shadow:var(--sh);position:relative;overflow:hidden;
-}
-.scard::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--c1,var(--navy)),var(--c2,var(--navy-light)));
-}
-.scard.green{--c1:var(--green);--c2:#66bb6a}
-.scard.gold{--c1:var(--gold);--c2:var(--gold-light)}
-.scard.blue{--c1:var(--blue);--c2:#42a5f5}
-.scard.purple{--c1:var(--purple);--c2:#9575cd}
-.scard.teal{--c1:var(--teal);--c2:#26a69a}
-.scard.orange{--c1:var(--orange);--c2:#ffa726}
-.scard-label{font-size:11px;color:var(--g400);font-weight:500;letter-spacing:.5px;margin-bottom:6px}
-.scard-value{font-size:26px;font-weight:600;color:var(--g800);line-height:1.1}
-.scard-unit{font-size:12px;color:var(--g400);margin-top:3px}
-
-/* PANEL */
-.panel{background:var(--white);border-radius:var(--r);border:1px solid var(--g200);box-shadow:var(--sh);margin-bottom:1.25rem}
-.panel-head{padding:1rem 1.25rem;border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.panel-title{font-size:13px;font-weight:500;color:var(--g800)}
-.panel-body{padding:1.1rem 1.25rem}
-
-/* FILTER ROW */
-.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.filter-row>*{flex:1;min-width:150px}
-.f-label{font-size:11px;color:var(--g400);font-weight:500;margin-bottom:4px;display:block}
-input[type=text],select{
-  width:100%;padding:9px 12px;
-  border:1px solid var(--g200);border-radius:var(--r-sm);
-  font-size:13px;font-family:inherit;color:var(--g800);
-  background:var(--g100);transition:border-color .15s,background .15s;
-  appearance:none;
-}
-input[type=text]:focus,select:focus{outline:none;border-color:var(--navy-light);background:var(--white)}
-.btn{
-  padding:9px 18px;border-radius:var(--r-sm);font-size:13px;
-  font-family:inherit;cursor:pointer;border:none;font-weight:500;
-  transition:all .12s;white-space:nowrap;
-}
-.btn-navy{background:var(--navy);color:#fff}
-.btn-navy:hover{background:var(--navy-mid)}
-.btn-outline{background:var(--white);color:var(--g600);border:1px solid var(--g200)}
-.btn-outline:hover{border-color:var(--navy-mid);color:var(--navy)}
-
-/* TABLE */
-.tbl-wrap{overflow-x:auto;border-radius:var(--r-sm);border:1px solid var(--g200)}
-table{width:100%;border-collapse:collapse;min-width:600px}
-thead tr{background:var(--navy)}
-th{padding:10px 14px;text-align:left;font-size:11px;font-weight:500;color:rgba(255,255,255,.85);white-space:nowrap;letter-spacing:.5px}
-tbody tr{border-bottom:1px solid var(--g200);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--g100)}
-td{padding:10px 14px;font-size:13px;color:var(--g600);vertical-align:middle}
-td.bold{font-weight:500;color:var(--g800)}
-td.center{text-align:center}
-td.right{text-align:right}
-.chip{display:inline-block;font-size:11px;padding:2px 9px;border-radius:4px;font-weight:500}
-.chip-blue{background:var(--blue-bg);color:var(--blue)}
-.chip-green{background:var(--green-bg);color:var(--green)}
-.chip-orange{background:var(--orange-bg);color:var(--orange)}
-.chip-red{background:var(--red-bg);color:var(--red)}
-.chip-purple{background:var(--purple-bg);color:var(--purple)}
-
-/* PROGRESS BAR */
-.prog-wrap{background:var(--g200);border-radius:99px;height:6px;overflow:hidden;min-width:80px}
-.prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--navy-mid),var(--navy-light));transition:width .4s}
-.prog-bar.warn{background:linear-gradient(90deg,var(--orange),#ffa726)}
-.prog-bar.danger{background:linear-gradient(90deg,var(--red),#ef5350)}
-
-/* ID LOOKUP */
-.id-result{background:var(--gold-pale);border:1px solid rgba(200,168,75,.3);border-radius:var(--r);padding:1.25rem;margin-top:1rem}
-.id-name{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:600;color:var(--navy);margin-bottom:.75rem}
-.id-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
-.id-kv{background:var(--white);border-radius:var(--r-sm);padding:.75rem 1rem;border:1px solid var(--g200)}
-.id-kv .k{font-size:11px;color:var(--g400);margin-bottom:3px}
-.id-kv .v{font-size:18px;font-weight:600;color:var(--g800)}
-.id-kv .unit{font-size:11px;color:var(--g400);margin-left:2px}
-.quota-bar{margin-top:.5rem}
-.quota-label{font-size:11px;color:var(--g600);margin-bottom:4px;display:flex;justify-content:space-between}
-.id-dates{margin-top:.75rem}
-.id-dates-title{font-size:12px;color:var(--g400);font-weight:500;margin-bottom:.5rem;letter-spacing:.5px}
-.date-chips{display:flex;gap:6px;flex-wrap:wrap}
-.date-chip{background:var(--white);border:1px solid var(--g200);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--g600)}
-
-/* PAGINATION */
-.pager{display:flex;justify-content:center;gap:5px;padding:1rem;flex-wrap:wrap}
-.pager button{font-size:12px;padding:5px 10px;border-radius:5px;border:1px solid var(--g200);background:var(--white);color:var(--g600);cursor:pointer;font-family:inherit;transition:all .12s}
-.pager button:hover{border-color:var(--navy-mid);color:var(--navy)}
-.pager button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.pager button:disabled{opacity:.35;cursor:default}
-
-/* META */
-.result-meta{font-size:12px;color:var(--g400);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
-.meta-badge{background:var(--navy);color:#fff;font-size:11px;padding:1px 9px;border-radius:99px}
-
-/* LOADING */
-.loading-box{text-align:center;padding:3rem;color:var(--g400)}
-.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--g200);border-top-color:var(--navy-mid);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:.75rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-.error-box{background:var(--red-bg);border:1px solid #ffcdd2;border-radius:var(--r);padding:1.25rem;color:var(--red);font-size:13px}
-
-/* FOOTER */
-footer{text-align:center;padding:1.5rem;font-size:11px;color:var(--g400);border-top:1px solid var(--g200);margin-top:1rem;line-height:2.2}
-footer strong{color:var(--navy);font-weight:500}
-
-@media(max-width:600px){
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .filter-row>*{min-width:100%}
-  .topbar-badge{display:none}
-}
-</style>
-</head>
-<body>
-
-<!-- ══ LOGIN ══ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-badge">高雄市政府教育局</div>
-      <div class="login-title">115年心理諮商<br>經費控管系統</div>
-      <div class="login-gold"></div>
-    </div>
-    <div style="margin-bottom:1rem">
-      <span class="login-label">系統密碼</span>
-      <input class="login-input" type="password" id="pw-input" placeholder="請輸入系統密碼" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="login-btn" onclick="doLogin()">登　入</button>
-    <div class="login-err" id="login-err"></div>
-    <div style="text-align:center;margin-top:1.25rem;font-size:11px;color:rgba(255,255,255,.25)">本系統限授權承辦人員使用</div>
-  </div>
-</div>
-
-<!-- ══ APP ══ -->
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-title">
-      <span>心理諮商經費控管系統</span>
-      <span class="topbar-badge">115年度</span>
-    </div>
-    <div class="topbar-right">
-      <span id="last-update-label" style="font-size:11px;color:rgba(255,255,255,.4)"></span>
-      <button class="refresh-btn" onclick="loadData()">↻ 重新整理</button>
-      <button class="logout-btn" onclick="doLogout()">登出</button>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab(0)">📊 總覽儀表板</button>
-    <button class="tab" onclick="switchTab(1)">🔍 識別碼查詢</button>
-    <button class="tab" onclick="switchTab(2)">🏢 機構統計</button>
-    <button class="tab" onclick="switchTab(3)">📋 填報明細</button>
-  </div>
-
-  <div class="main-content">
-
-    <!-- ── TAB 0：總覽 ── -->
-    <div class="tab-pane active" id="tab-0">
-      <div id="overview-loading" class="loading-box">
-        <div class="spinner"></div><div>資料載入中…</div>
-      </div>
-      <div id="overview-content" style="display:none">
-        <div class="stats-grid" id="stats-cards"></div>
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">當月統計（依月份篩選）</span>
-            <select id="month-select" onchange="renderMonthStats()" style="max-width:160px;margin:0">
-              <option value="">── 選擇月份 ──</option>
-            </select>
-          </div>
-          <div class="panel-body">
-            <div class="stats-grid" id="month-cards">
-              <div style="color:var(--g400);font-size:13px;grid-column:1/-1">請選擇上方月份</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TAB 1：識別碼查詢 ── -->
-    <div class="tab-pane" id="tab-1">
-      <div class="panel">
-        <div class="panel-head"><span class="panel-title">識別碼查詢</span></div>
-        <div class="panel-body">
-          <div class="filter-row" style="align-items:flex-end">
-            <div>
-              <span class="f-label">使用者補助識別碼</span>
-              <input type="text" id="id-input" placeholder="例如：AE71981220" oninput="searchID()" style="text-transform:uppercase">
-            </div>
-          </div>
-          <div id="id-result-area" style="margin-top:1rem">
-            <div style="color:var(--g400);font-size:13px">請輸入識別碼進行查詢</div>
-          </div>
-        </div>
-      </div>
-      <!-- 識別碼列表 -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="panel-title">所有使用者清單</span>
-          <span id="id-list-meta" class="meta-badge" style="font-size:11px;padding:2px 10px;border-radius:99px;background:var(--navy);color:#fff"></span>
-        </div>
-        <div class="panel-body" style="padding:0">
-          <div class="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>識別碼</th>
-                  <th style="text-align:center">使用次數</th>
-                  <th style="text-align:center">使用時數</th>
-                  <th style="text-align:center">可核銷金額</th>
-                  <th style="text-align:center">剩餘次數</th>
-                  <th>使用進度</th>
-                  <th>最後使用日</th>
-                </tr>
-              </thead>
-              <tbody id="id-tbody"></tbody>
-            </table>
-          </div>
-          <div class="pager" id="id-pager"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TAB 2：機構統計 ── -->
-    <div class="tab-pane" id="tab-2">
-      <div class="panel">
-        <div class="panel-head"><span class="panel-title">各機構申請經費統計</span></div>
-        <div class="panel-body" style="padding:0">
-          <div class="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>機構名稱</th>
-                  <th style="text-align:center">填報次數</th>
-                  <th style="text-align:center">服務人次</th>
-                  <th style="text-align:center">服務時數</th>
-                  <th style="text-align:right">可申請經費</th>
-                  <th>佔總經費比例</th>
-                </tr>
-              </thead>
-              <tbody id="org-tbody"></tbody>
-              <tfoot id="org-tfoot"></tfoot>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TAB 3：填報明細 ── -->
-    <div class="tab-pane" id="tab-3">
-      <div class="panel">
-        <div class="panel-head"><span class="panel-title">篩選條件</span></div>
-        <div class="panel-body">
-          <div class="filter-row">
-            <div>
-              <span class="f-label">機構名稱</span>
-              <select id="d-org" onchange="applyDetailFilter()">
-                <option value="">── 全部機構 ──</option>
-              </select>
-            </div>
-            <div>
-              <span class="f-label">填報月份</span>
-              <select id="d-month" onchange="applyDetailFilter()">
-                <option value="">── 全部月份 ──</option>
-              </select>
-            </div>
-            <div>
-              <span class="f-label">關鍵字（識別碼等）</span>
-              <input type="text" id="d-keyword" placeholder="輸入關鍵字…" oninput="applyDetailFilter()">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="result-meta" id="detail-meta"></div>
-      <div class="panel">
-        <div class="panel-body" style="padding:0">
-          <div class="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>填報日期</th>
-                  <th>機構名稱</th>
-                  <th style="text-align:center">人次</th>
-                  <th style="text-align:center">時數</th>
-                  <th style="text-align:right">當筆金額</th>
-                  <th>第1人識別碼</th>
-                  <th>第1人服務日</th>
-                </tr>
-              </thead>
-              <tbody id="detail-tbody"></tbody>
-            </table>
-          </div>
-          <div class="pager" id="detail-pager"></div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /main-content -->
-
-  <footer>
-    <strong>高雄市政府教育局　人事室</strong><br>
-    <br>
-    資料來源：Google 表單即時同步　｜　最後更新：<span id="last-update">—</span>
-  </footer>
-</div>
-
 <script>
 /* ══════════════════════════════════════════════════
    【設定區】請修改以下兩項
@@ -498,10 +44,27 @@ let detailPage = 1;
 let idListPage = 1;
 const PAGE_SZ = 20;
 
+/* ══ 1. 機構名稱少字自動勾稽過濾器 ══ */
+function standardizeOrgName(rawName) {
+  if (!rawName) return '';
+  let name = String(rawName).trim();
+  
+  // 自動修正少字或漏字的狀況（張老師高雄分務所 -> 高雄分事務所）
+  if (name.includes('張老師') && name.includes('高雄分務所')) {
+    return '財團法人「張老師」基金會高雄分事務所';
+  }
+  // 增加關鍵字防呆（若有包含張老師且包含高雄）
+  if (name.includes('張老師') && name.includes('高雄') && !name.includes('分事務所')) {
+    return '財團法人「張老師」基金會高雄分事務所';
+  }
+  return name;
+}
+
 /* ══ 工具函數 ══ */
 function parseNum(v){
   if(v===null||v===undefined||v==='') return 0;
-  const n=parseFloat(String(v).replace(/[人時小時次]/g,'').trim());
+  // 進一步將中文字、空白剔除以利解析
+  const n=parseFloat(String(v).replace(/[人時小時次\s]/g,'').trim());
   return isNaN(n)?0:n;
 }
 function excelToRoc(v){
@@ -515,6 +78,8 @@ function excelToRoc(v){
   }
   return s;
 }
+
+/* ══ 2. 全面重構：可通殺所有文字日期格式與數字格式的 getMonthKey ══ */
 function getMonthKey(row){
   const ts = row['時間戳記'];
   if (!ts) return '—';
@@ -522,30 +87,31 @@ function getMonthKey(row){
   let d;
   const num = parseFloat(String(ts).trim());
   
-  // A. 如果是 Excel 數字序號型態
+  // 情況 A：如果是 Excel 數字序號型態
   if (!isNaN(num) && num > 40000) {
     d = new Date(Math.round((num - 25569) * 86400 * 1000));
   } else {
-    // B. 如果是 Google 表單文字（例如 "2026/5/20 下午 12:53:40"）
-    // 先移除「上午/下午」中文字，並將 "-" 換成 "/" 確保所有瀏覽器都能正確解析成日期
+    // 情況 B：標準 Google 表單日期文字（例如 "2026/5/20 下午 12:53:40"）
+    // 先移除所有中文字（如 上午/下午），並將 "-" 換成 "/" 確保所有瀏覽器皆能正常執行 Date.parse
     let cleanTs = String(ts).replace(/[\u4e00-\u9fa5]/g, '').replace(/-/g, '/').trim();
     d = new Date(cleanTs);
     
-    // 如果因為時間格式導致解析失敗，嘗試只切出前面的「年月日」部分（如 2026/5/20）
+    // 如果直接解析仍失敗，嘗試暴力切出前兩個斜線的日期部分
     if (isNaN(d.getTime())) {
-      const parts = cleanTs.split(' ');
-      if (parts[0]) d = new Date(parts[0]);
+      const match = cleanTs.match(/^(\d{4})[\/\-]\d{1,2}[\/\-]\d{1,2}/);
+      if (match) {
+        d = new Date(match[0]);
+      }
     }
   }
   
-  // 檢查 Date 物件是否有效，無效則回傳 "—"
+  // 檢查 Date 物件若依然無效，回傳未填
   if (!d || isNaN(d.getTime())) return '—';
   
   // 轉換成與選單對應的格式（例如 "115年05月"）
   const rocYear = d.getFullYear() - 1911;
   const m = String(d.getMonth() + 1).padStart(2, '0');
   return rocYear + '年' + m + '月';
-}
 }
 function fmtMoney(n){ return "NT$ "+Math.round(n).toLocaleString(); }
 function pct(a,b){ return b===0?0:Math.round(a/b*100); }
@@ -588,7 +154,8 @@ function buildIdMap(rows){
     {id:C.p6_id, date:C.p6_date, hrs:C.p6_hrs},
   ];
   rows.forEach(row=>{
-    const org=(row[C.org]||'').trim();
+    // 套用機構名稱標準化
+    const org=standardizeOrgName(row[C.org]);
     pFields.forEach(f=>{
       const rawId=(row[f.id]||'').toString().trim().toUpperCase();
       if(!rawId) return;
@@ -605,7 +172,8 @@ function buildIdMap(rows){
 function buildOrgMap(rows){
   const m={};
   rows.forEach(row=>{
-    const org=(row[C.org]||'').trim();
+    // 套用機構名稱標準化
+    const org=standardizeOrgName(row[C.org]);
     if(!org) return;
     const p=parseNum(row[C.persons]);
     const h=parseNum(row[C.hours]);
@@ -653,7 +221,8 @@ function renderOverview(){
     const p=parseNum(r[C.persons]);
     const h=parseNum(r[C.hours]);
     totalPersons+=p; totalHours+=h;
-    if((r[C.org]||'').trim()) orgs.add((r[C.org]).trim());
+    const o = standardizeOrgName(r[C.org]);
+    if(o) orgs.add(o);
   });
   const totalAmt=totalHours*PRICE_PER_HOUR;
   const totalIDs=Object.keys(idMap).length;
@@ -686,7 +255,7 @@ function renderOverview(){
     </div>
     <div class="scard teal">
       <div class="scard-label">已填報筆數</div>
-      <div class="scard-value">${allRows.filter(r=>parseNum(r[C.persons])>0).length}</div>
+      <div class="scard-value">${allRows.filter(r=>r['時間戳記']).length}</div>
       <div class="scard-unit">有效填報次數</div>
     </div>
   `;
@@ -702,12 +271,23 @@ function renderOverview(){
   }
 }
 
+/* ══ 3. 修正當月統計數據加總邏輯 ══ */
 function renderMonthStats(){
   const m=document.getElementById('month-select').value;
   if(!m){document.getElementById('month-cards').innerHTML='<div style="color:var(--g400);font-size:13px;grid-column:1/-1">請選擇上方月份</div>';return;}
+  
+  // 核心篩選
   const rows=allRows.filter(r=>getMonthKey(r)===m);
+  
   let p=0,h=0;
-  rows.forEach(r=>{p+=parseNum(r[C.persons]);h+=parseNum(r[C.hours]);});
+  rows.forEach(r=>{
+    // 防呆：抽離欄位中可能包含的非數字文字符號再做加總
+    const rawP = String(r[C.persons] || '0').replace(/[^0-9.]/g, '');
+    const rawH = String(r[C.hours] || '0').replace(/[^0-9.]/g, '');
+    p += parseFloat(rawP) || 0;
+    h += parseFloat(rawH) || 0;
+  });
+  
   const amt=h*PRICE_PER_HOUR;
   document.getElementById('month-cards').innerHTML=`
     <div class="scard">
@@ -727,7 +307,7 @@ function renderMonthStats(){
     </div>
     <div class="scard blue">
       <div class="scard-label">${m}　填報筆數</div>
-      <div class="scard-value">${rows.filter(r=>parseNum(r[C.persons])>0).length}</div>
+      <div class="scard-value">${rows.length}</div>
       <div class="scard-unit">筆</div>
     </div>
   `;
@@ -828,9 +408,9 @@ function renderOrgTable(){
     </tr>`;
 }
 
-/* ══ 填報明細 ══ */
+/* ══ 填報明細選單 ══ */
 function buildFilters(){
-  const orgs=[...new Set(allRows.map(r=>(r[C.org]||'').trim()).filter(Boolean))].sort();
+  const orgs=[...new Set(allRows.map(r=>standardizeOrgName(r[C.org])).filter(Boolean))].sort();
   ['d-org'].forEach(id=>{
     const sel=document.getElementById(id);
     sel.innerHTML='<option value="">── 全部機構 ──</option>';
@@ -854,7 +434,7 @@ function applyDetailFilter(){
   const month=document.getElementById('d-month').value;
   const kw=document.getElementById('d-keyword').value.trim().toLowerCase();
   detailFiltered=allRows.filter(r=>{
-    if(org&&(r[C.org]||'').trim()!==org) return false;
+    if(org&&standardizeOrgName(r[C.org])!==org) return false;
     if(month&&getMonthKey(r)!==month) return false;
     if(kw){const s=Object.values(r).map(v=>String(v||'').toLowerCase()).join(' ');if(!s.includes(kw)) return false;}
     return true;
@@ -872,7 +452,7 @@ function renderDetailTable(){
     const p=parseNum(r[C.persons]);
     const h=parseNum(r[C.hours]);
     const amt=h*PRICE_PER_HOUR;
-    const org=(r[C.org]||'').trim()||'（未填）';
+    const org=standardizeOrgName(r[C.org])||'（未填）';
     const p1id=(r[C.p1_id]||'').trim().toUpperCase();
     const p1d=excelToRoc(r[C.p1_date]);
     if(!org||org==='（未填）') return '';
@@ -904,5 +484,3 @@ function renderPager(key,total,cur,cb){
   el.innerHTML=h;
 }
 </script>
-</body>
-</html>
