@@ -519,25 +519,34 @@ function getMonthKey(row){
   const ts = row['時間戳記'];
   if (!ts) return '—';
   
-  let d;
-  const num = parseFloat(String(ts).trim());
-  
-  // 情況 A：如果是 Excel 數字序號型態
-  if (!isNaN(num) && num > 40000) {
-    d = new Date(Math.round((num - 25569) * 86400 * 1000));
+  const s = String(ts).trim();
+  let year = null;
+  let month = null;
+
+  // 1. 如果是 Excel 數字序號型態（大於 40000 的純數字）
+  const num = parseFloat(s);
+  if (!isNaN(num) && num > 40000 && !s.includes('/') && !s.includes('-')) {
+    const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+    if (!isNaN(d.getTime())) {
+      year = d.getFullYear() - 1911;
+      month = d.getMonth() + 1;
+    }
   } else {
-    // 情況 B：如果是標準文字日期（例如 "2026/5/20" 或 "2026-05-20"）
-    // 考慮到民國減 1911 的習慣，這裡先抓西元年
-    d = new Date(String(ts).replace(/-/g, '/')); 
+    // 2. 如果是 Google 表單的日期文字型態（例如 "2026/5/20 下午..." 或 "2026-05-20"）
+    // 尋找符合四位數西元年的數字
+    const match = s.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if (match) {
+      year = parseInt(match[1], 10) - 1911; // 2026 - 1911 = 115
+      month = parseInt(match[2], 10);      // 抓到 5
+    }
+  }
+
+  // 如果成功抓到民國年份與月份，組合成 "115年05月" 格式
+  if (year !== null && month !== null && !isNaN(year) && !isNaN(month)) {
+    return year + '年' + String(month).padStart(2, '0') + '月';
   }
   
-  // 檢查 Date 物件是否有效
-  if (isNaN(d.getTime())) return '—';
-  
-  // 轉換成與選單對應的格式（例如 "115年05月"）
-  const rocYear = d.getFullYear() - 1911;
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  return rocYear + '年' + m + '月';
+  return '—';
 }
 function fmtMoney(n){ return "NT$ "+Math.round(n).toLocaleString(); }
 function pct(a,b){ return b===0?0:Math.round(a/b*100); }
