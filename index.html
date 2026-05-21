@@ -529,7 +529,7 @@ function excelToRoc(v){
   const isoMatch=s.match(/(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})/);
   if(isoMatch){
     const y=parseInt(isoMatch[1])-1911;
-    const m=String(isoMatch[2]).padStart(2,'0');
+    const m=String(parseInt(isoMatch[2])).padStart(2,'0');
     const d=String(isoMatch[3]).padStart(2,'0');
     return y+'/'+m+'/'+d;
   }
@@ -729,9 +729,15 @@ function renderOverview(){
 function renderMonthStats(){
   const m=document.getElementById('month-select').value;
   if(!m){document.getElementById('month-cards').innerHTML='<div style="color:var(--g400);font-size:13px;grid-column:1/-1">請選擇上方月份</div>';return;}
-  const rows=allRows.filter(r=>getMonthKey(r)===m);
+const rows=allRows.filter(r=>getMonthKey(r)===m);
+  const keys=allRows.length>0?Object.keys(allRows[0]):[];
+  const personsKey=C.persons||keys.find(k=>k.includes('使用人次'))||'';
+  const hoursKey=C.hours||keys.find(k=>k.includes('使用總時數'))||'';
   let p=0,h=0;
-  rows.forEach(r=>{p+=parseNum(r[C.persons]);h+=parseNum(r[C.hours]);});
+  rows.forEach(r=>{
+    p+=parseNum(r[personsKey]);
+    h+=parseNum(r[hoursKey]);
+  });
   const amt=h*PRICE_PER_HOUR;
   document.getElementById('month-cards').innerHTML=`
     <div class="scard">
